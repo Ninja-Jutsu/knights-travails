@@ -116,27 +116,36 @@ class KnightMove{
     getPotentialMoves(newStart, parent){
         newStart.parent = parent
         
+        // prevent the cell to be visited twice 
         for(let y = 0; y < movesXnY.length; y++){
-            // prevent the cell to be visited twice 
             if(newStart.visited == false){
                 newStart.potentialMoves.push([newStart.start[0]+movesXnY[y][0],newStart.start[1]+movesXnY[y][1]])  
             }
         }
         newStart.visited = true
+
         //prevent the node to get off board ( < 0 ; > 7)
         for(let i = 0; i < 8; i++){
             for(let k = 0; k < 2; k++){
                 if(newStart.potentialMoves[i][k] < 0 || newStart.potentialMoves[i][k] > 7){
-                    newStart.potentialMoves[i] = null
+                    newStart.potentialMoves[i][k] = null
                 }
             }
         }
+        const cleanArray = []
+        for(let z = 0; z < 8; z++){
+            if(newStart.potentialMoves[z][0] != null && newStart.potentialMoves[z][1] != null)
+            {   
+                cleanArray.push(newStart.potentialMoves[z])
+            }
+        }
+        newStart.potentialMoves = cleanArray
         console.log(newStart)
     }
 }
 
 let chess = new KnightMove()
 
-chess.chooseStart(5,7)
+chess.chooseStart(0,0)
 
     
