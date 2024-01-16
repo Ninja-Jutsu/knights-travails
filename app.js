@@ -88,9 +88,8 @@ class Node {
 }
 
 let movesXnY = [[-2, -1], [-1, -2], [2, 1], [1, 2], [2, -1], [-1, 2], [-2, 1], [1, -2]];
-let counter = 0
 let path = []
-let visited;
+let counter = 0;
 
 class KnightMove {
     constructor() {
@@ -101,80 +100,101 @@ class KnightMove {
         return this.root === null
     }
 
-    chooseStart(x, y) {
-        const newStart = new Node([x, y])
-
+    chooseStart(coord) {
+        const newStart = new Node(coord)
         if (this.isEmpty()) {
             this.root = newStart
-            this.getPotentialMoves(this.root, null)
+            this.getPotentialMoves(this.root)
         } else {
-            this.getPotentialMoves(newStart)
+            this.checkNextMoves(newStart)
         }
     }
-    getPotentialMoves(newStart) {
-        if (counter === 5) {
-            return 0
-        } else {
-            visited = newStart.start
-            counter++
-            // newStart.parent = parent
-            // prevent the cell to be visited twice 
-            for (let y = 0; y < movesXnY.length; y++) {
-                if (newStart.visited == false) {
-                    newStart.potentialMoves.push([newStart.start[0] + movesXnY[y][0], newStart.start[1] + movesXnY[y][1]])
-                }
-            }
 
-            //prevent the node to get off board ( < 0 ; > 7)
-            for (let i = 0; i < 8; i++) {
-                for (let k = 0; k < 2; k++) {
-                    if (newStart.potentialMoves[i][k] < 0 || newStart.potentialMoves[i][k] > 7) {
-                        newStart.potentialMoves[i][k] = null
-                    }
-                }
-            }
-            const cleanArray = []
-            for (let z = 0; z < 8; z++) {
-                if (newStart.potentialMoves[z][0] != null && newStart.potentialMoves[z][1] != null) {
-                    cleanArray.push(newStart.potentialMoves[z])
-                }
-            }
-            newStart.potentialMoves = cleanArray
-            for (let w = 0; w < newStart.potentialMoves.length; w++) {
-                for (let x = 0; x < visited.length; x++) {
-                    if (visited[x][0] !== newStart.potentialMoves[w][0] && visited[x][1] !== newStart.potentialMoves[w][1]) {
-                        console.log('visited' + visited[x][0], visited[x][1])
-                        console.log('pot' + newStart.potentialMoves[w][0], newStart.potentialMoves[w][1])
+    checkNextMoves(newMove) {
+        if (newMove.potentialMoves[0] === undefined) {
+            this.getPotentialMoves(newMove)
+        }
+    }
 
-                        this.chooseStart(newStart.potentialMoves[w][0], newStart.potentialMoves[w][1])
-                    }
-                }
-            }
-            path.push(newStart.potentialMoves)
-            console.log(visited)
+    getPotentialMoves(aMove) {
+        while (counter < 5) {
             console.log(path)
-
-        }
-    }
-    findPath(start, end) {
-        this.chooseStart(start[0], start[1])
-        console.log(path)
-        if (start[0] === end[0] && start[1] === end[1]) {
-            return 0
-        } else {
-            for (let i = 0; i < path.length; i++) {
-                for (let y = 0; y < path[i].length; y++) {
-                    if (path[i][y][0] === end[0] && path[i][y][1] === end[1]) {
-                        return i
+            counter++
+            if (!path.includes(`[${aMove.start}]`)) {
+                path.push(`[${aMove.start}]`)
+                for (let y = 0; y < movesXnY.length; y++) {
+                    aMove.potentialMoves.push([aMove.start[0] + movesXnY[y][0], aMove.start[1] + movesXnY[y][1]])
+                }
+                for (let i = 0; i < 8; i++) {
+                    for (let k = 0; k < 2; k++) {
+                        if (aMove.potentialMoves[i][k] < 0 || aMove.potentialMoves[i][k] > 7) {
+                            aMove.potentialMoves[i] = null
+                        }
                     }
                 }
+                const cleanArray = []
+                for (let z = 0; z < 8; z++) {
+                    if (aMove.potentialMoves[z] != null) {
+                        cleanArray.push(aMove.potentialMoves[z])
+                    }
+                }
+
+                aMove.potentialMoves = cleanArray
+                for (let v = 0; v < aMove.potentialMoves.length; v++) {
+                    this.chooseStart(aMove.potentialMoves[0])
+                }
             }
+            console.log(`potentials:  ${aMove.potentialMoves}`)
         }
     }
 }
 
 let chess = new KnightMove()
-chess.chooseStart(2, 0)
+chess.chooseStart([2, 0])
 
 // console.log(chess.findPath([0, 1], [5, 2]))
 // console.log(chess.findPath([2,0], [5, 2]))
+
+
+//!OLD VERSION
+// if (counter === 5) {
+//     return 0
+// } else {
+//     visited = newStart.start
+//     counter++
+//     // newStart.parent = parent
+//     // prevent the cell to be visited twice 
+//     for (let y = 0; y < movesXnY.length; y++) {
+//         if (newStart.visited == false) {
+//             newStart.potentialMoves.push([newStart.start[0] + movesXnY[y][0], newStart.start[1] + movesXnY[y][1]])
+//         }
+//     }
+
+//     //prevent the node to get off board ( < 0 ; > 7)
+//     for (let i = 0; i < 8; i++) {
+//         for (let k = 0; k < 2; k++) {
+//             if (newStart.potentialMoves[i][k] < 0 || newStart.potentialMoves[i][k] > 7) {
+//                 newStart.potentialMoves[i][k] = null
+//             }
+//         }
+//     }
+//     const cleanArray = []
+//     for (let z = 0; z < 8; z++) {
+//         if (newStart.potentialMoves[z][0] != null && newStart.potentialMoves[z][1] != null) {
+//             cleanArray.push(newStart.potentialMoves[z])
+//         }
+//     }
+//     newStart.potentialMoves = cleanArray
+//     for (let w = 0; w < newStart.potentialMoves.length; w++) {
+//         for (let x = 0; x < visited.length; x++) {
+//             if (visited[x][0] !== newStart.potentialMoves[w][0] && visited[x][1] !== newStart.potentialMoves[w][1]) {
+//                 console.log('visited' + visited[x][0], visited[x][1])
+//                 console.log('pot' + newStart.potentialMoves[w][0], newStart.potentialMoves[w][1])
+
+//                 this.chooseStart(newStart.potentialMoves[w][0], newStart.potentialMoves[w][1])
+//             }
+//         }
+//     }
+//     path.push(newStart.potentialMoves)
+//     console.log(visited)
+//     console.log(path)
